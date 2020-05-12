@@ -6,6 +6,7 @@ import random
 pygame.init()
 size = width, height = 750, 750
 screen = pygame.display.set_mode(size)
+clock = pygame.time.Clock()
 bg = pygame.image.load("Background.png")    # TODO: Background
 bg_rect = bg.get_rect()
 
@@ -40,7 +41,7 @@ class Body:
                 eaten = True
         return eaten
 
-    move_dir = []
+    move_dir = None
 
 
 class Apple:
@@ -78,7 +79,8 @@ while True:
         print(BodyCount.bodies[1].body.x, BodyCount.bodies[1].body.y)
 
     if snake_head.apple_eaten(apple):
-        new_body = Body((BodyCount.head_pos[len(BodyCount.head_pos) - len(BodyCount.bodies)][0], BodyCount.head_pos[len(BodyCount.head_pos) - len(BodyCount.bodies)][0]))
+        new_body = Body((BodyCount.head_pos[len(BodyCount.head_pos) - len(BodyCount.bodies)][0],
+                         BodyCount.head_pos[len(BodyCount.head_pos) - len(BodyCount.bodies)][1]))
         apple.random_spawn()
 
     for event in pygame.event.get():
@@ -87,24 +89,28 @@ while True:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_DOWN:
+                Body.move_dir = 'down'
                 snake_head.body = snake_head.body.move(Body.speed_down)
                 BodyCount.head_pos.append((snake_head.body.x, snake_head.body.y))
                 if len(BodyCount.bodies) > 1:
                     move_forward()
 
             elif event.key == pygame.K_UP:
+                Body.move_dir = 'up'
                 snake_head.body = snake_head.body.move(Body.speed_up)
                 BodyCount.head_pos.append((snake_head.body.x, snake_head.body.y))
                 if len(BodyCount.bodies) > 1:
                     move_forward()
 
             elif event.key == pygame.K_LEFT:
+                Body.move_dir = 'left'
                 snake_head.body = snake_head.body.move(Body.speed_left)
                 BodyCount.head_pos.append((snake_head.body.x, snake_head.body.y))
                 if len(BodyCount.bodies) > 1:
                     move_forward()
 
             elif event.key == pygame.K_RIGHT:
+                Body.move_dir = 'right'
                 snake_head.body = snake_head.body.move(Body.speed_right)
                 BodyCount.head_pos.append((snake_head.body.x, snake_head.body.y))
                 if len(BodyCount.bodies) > 1:
@@ -116,4 +122,3 @@ while True:
         screen.blit(body_part.img, body_part.body)   # blit ?
 
     pygame.display.flip()   # updates whole screen whereas update(*args) only the args portion of the screen.
-
