@@ -11,6 +11,14 @@ bg = pygame.image.load("Background.png")    # TODO: Background
 bg_rect = bg.get_rect()
 
 
+class Scoreboard:
+    score = 0
+    if pygame.font:
+        font = pygame.font.Font(None, 36)
+        text = font.render("Your Score: " + str(score), 1, (10, 10, 10))
+        textpos = text.get_rect(centerx=600)
+
+
 class BodyCount:
     id = 1
     bodies = []
@@ -76,21 +84,20 @@ def move_forward():
 
 started = False
 ms = 0
-seconds_since_last_event = 0
+milliseconds_since_last_event = 0
 
 while True:
-    print(seconds_since_last_event/1000)
+    # print(milliseconds_since_last_event/1000)
     if started:
         ms = clock.tick()
-    seconds_since_last_event += ms
-
-    if len(BodyCount.bodies) > 1:
-        print(BodyCount.bodies[1].body.x, BodyCount.bodies[1].body.y)
+    milliseconds_since_last_event += ms
 
     if snake_head.apple_eaten(apple):
         new_body = Body((BodyCount.head_pos[len(BodyCount.head_pos) - len(BodyCount.bodies)][0],
                          BodyCount.head_pos[len(BodyCount.head_pos) - len(BodyCount.bodies)][1]))
         apple.random_spawn()
+        Scoreboard.score += 1
+        Scoreboard.text = text = Scoreboard.font.render("Your Score: " + str(Scoreboard.score), 1, (10, 10, 10))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -100,33 +107,25 @@ while True:
             started = True
             if event.key == pygame.K_DOWN:
                 Body.move_dir = 'down'
-                snake_head.body = snake_head.body.move(Body.speed_down)
-                BodyCount.head_pos.append((snake_head.body.x, snake_head.body.y))
                 if len(BodyCount.bodies) > 1:
                     move_forward()
 
             elif event.key == pygame.K_UP:
                 Body.move_dir = 'up'
-                snake_head.body = snake_head.body.move(Body.speed_up)
-                BodyCount.head_pos.append((snake_head.body.x, snake_head.body.y))
                 if len(BodyCount.bodies) > 1:
                     move_forward()
 
             elif event.key == pygame.K_LEFT:
                 Body.move_dir = 'left'
-                snake_head.body = snake_head.body.move(Body.speed_left)
-                BodyCount.head_pos.append((snake_head.body.x, snake_head.body.y))
                 if len(BodyCount.bodies) > 1:
                     move_forward()
 
             elif event.key == pygame.K_RIGHT:
                 Body.move_dir = 'right'
-                #snake_head.body = snake_head.body.move(Body.speed_right)
-                #BodyCount.head_pos.append((snake_head.body.x, snake_head.body.y))
                 if len(BodyCount.bodies) > 1:
                     move_forward()
 
-    if seconds_since_last_event > 250:
+    if milliseconds_since_last_event > 200:
         if Body.move_dir == 'right':
             snake_head.body = snake_head.body.move(Body.speed_right)
             BodyCount.head_pos.append((snake_head.body.x, snake_head.body.y))
@@ -141,12 +140,14 @@ while True:
             BodyCount.head_pos.append((snake_head.body.x, snake_head.body.y))
         if len(BodyCount.bodies) > 1:
             move_forward()
-        seconds_since_last_event = 0
+        milliseconds_since_last_event = 0
 
-    screen.blit(bg, bg_rect)    # quick and dirty solution
+    # quick and dirty solution
+    screen.blit(bg, bg_rect)
     screen.blit(apple.img, apple.body)
     for body_part in BodyCount.bodies:
         screen.blit(body_part.img, body_part.body)
+    screen.blit(Scoreboard.text, Scoreboard.textpos)
 
     pygame.display.flip()   # updates whole screen whereas update(*args) only the args portion of the screen.
 
