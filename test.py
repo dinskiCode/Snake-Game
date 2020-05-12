@@ -2,12 +2,25 @@ import sys
 import pygame
 import random
 
+'''
+TODO:
+Mandatory updates:
+1. game over if snake head collides with part of body
+2. game over if snake head collides with border
+3. prevent apple from moving to tile that currently contains part of the snake body 
+--
+Optional updates:
+1. start-/pause-/end-screen
+2. multiple difficulties
+3. some sort of overlay that displays current score, difficulty and time 
+4. ...
+'''
 
 pygame.init()
 size = width, height = 750, 750
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
-bg = pygame.image.load("Background.png")    # TODO: Background
+bg = pygame.image.load("Background.png")
 bg_rect = bg.get_rect()
 
 
@@ -16,7 +29,7 @@ class Scoreboard:
     if pygame.font:
         font = pygame.font.Font(None, 36)
         text = font.render("Your Score: " + str(score), 1, (10, 10, 10))
-        textpos = text.get_rect(centerx=600)
+        text_pos = text.get_rect(centerx=600)
 
 
 class BodyCount:
@@ -147,7 +160,7 @@ while True:
     screen.blit(apple.img, apple.body)
     for body_part in BodyCount.bodies:
         screen.blit(body_part.img, body_part.body)
-    screen.blit(Scoreboard.text, Scoreboard.textpos)
+    screen.blit(Scoreboard.text, Scoreboard.text_pos)
 
     pygame.display.flip()   # updates whole screen whereas update(*args) only the args portion of the screen.
 
