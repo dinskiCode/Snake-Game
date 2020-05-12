@@ -1,14 +1,13 @@
 import sys
 import pygame
+import random
 
 pygame.init()
 size = width, height = 750, 750
-speed = [0, 1]  # horizontal, vertical
-speed_up = [0, -50]
+speed_up = [0, -50]     # horizontal, vertical
 speed_down = [0, 50]
 speed_left = [-50, 0]
 speed_right = [50, 0]
-black = 0, 0, 0
 
 screen = pygame.display.set_mode(size)
 
@@ -28,33 +27,51 @@ class Body:
         self.body.y = self.pos[1]
         BodyCount.id += 1
         BodyCount.bodies.append(self)
-# head
-snake = Body((0, 700))
 
-ball = pygame.image.load("Ball.gif")
-ball_rect = ball.get_rect()
-ball_rect.x = 250
-ball_rect.y = 0
+    move_dir = []
+
+
+class Apple:
+    def __init__(self):
+        self.pos = [random.randint(1, 13)*50, random.randint(1, 13)*50]
+        self.img = pygame.image.load("Apple.png")
+        self.body = self.img.get_rect()
+        self.body.x = self.pos[0]
+        self.body.y = self.pos[1]
+
+    def random_move(self):
+        curr_x = self.body.x    # equal to distance from left border
+        curr_y = self.body.y    # equal to distance from top border
+        x_pos = random.randint((0-curr_x)/50, (700-curr_x)/50)*50
+        y_pos = random.randint((0-curr_y)/50, (700-curr_y)/50)*50
+        new_pos = [x_pos, y_pos]
+        self.body = self.body.move(new_pos)
+
+
+# head
+snake_head = Body((0, 700))
+apple = Apple()
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_DOWN:
-                snake.body = snake.body.move(speed_down)
+                snake_head.body = snake_head.body.move(speed_down)
             elif event.key == pygame.K_UP:
-                if not ball_rect.top < 0:
-                    snake.body = snake.body.move(speed_up)
+                snake_head.body = snake_head.body.move(speed_up)
             elif event.key == pygame.K_LEFT:
-                new_body = Body((BodyCount.bodies[0].body.x, BodyCount.bodies[0].body.y))
-                snake.body = snake.body.move(speed_left)
-                for body in BodyCount.bodies:
-                    print(body.body.x, body.body.y, " = ", body.id)
+                if snake_head.body.x == apple.body.x and snake_head.body.y == apple.body.y:
+                    new_body = Body((BodyCount.bodies[0].body.x, BodyCount.bodies[0].body.y))
+                    apple.random_move()
+                snake_head.body = snake_head.body.move(speed_left)
             elif event.key == pygame.K_RIGHT:
-                snake.body = snake.body.move(speed_right)
+                snake_head.body = snake_head.body.move(speed_right)
 
     screen.fill((136, 181, 78))
+    screen.blit(apple.img, apple.body)
     for body_part in BodyCount.bodies:
         screen.blit(body_part.img, body_part.body)   # blit ?
-    pygame.display.flip()   # updates whole screen whereas update(*args) only the args portion of the screen.
 
+    pygame.display.flip()   # updates whole screen whereas update(*args) only the args portion of the screen.
