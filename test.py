@@ -52,7 +52,7 @@ class Apple:
         self.body.x = self.pos[0]
         self.body.y = self.pos[1]
 
-    def random_spawn(self):  # TODO: new_pos might be in a field that currently contains snake-body-part
+    def random_spawn(self):  # TODO: new_pos might be in a field that currently contains a part of snake body
         curr_x = self.body.x    # equal to distance from left border
         curr_y = self.body.y    # equal to distance from top border
         x_pos = random.randint((0-curr_x)/50, (700-curr_x)/50)*50
@@ -74,7 +74,16 @@ def move_forward():
         body_nr += 1
 
 
+started = False
+ms = 0
+seconds_since_last_event = 0
+
 while True:
+    print(seconds_since_last_event/1000)
+    if started:
+        ms = clock.tick()
+    seconds_since_last_event += ms
+
     if len(BodyCount.bodies) > 1:
         print(BodyCount.bodies[1].body.x, BodyCount.bodies[1].body.y)
 
@@ -88,6 +97,7 @@ while True:
             sys.exit()
 
         if event.type == pygame.KEYDOWN:
+            started = True
             if event.key == pygame.K_DOWN:
                 Body.move_dir = 'down'
                 snake_head.body = snake_head.body.move(Body.speed_down)
@@ -111,14 +121,32 @@ while True:
 
             elif event.key == pygame.K_RIGHT:
                 Body.move_dir = 'right'
-                snake_head.body = snake_head.body.move(Body.speed_right)
-                BodyCount.head_pos.append((snake_head.body.x, snake_head.body.y))
+                #snake_head.body = snake_head.body.move(Body.speed_right)
+                #BodyCount.head_pos.append((snake_head.body.x, snake_head.body.y))
                 if len(BodyCount.bodies) > 1:
                     move_forward()
+
+    if seconds_since_last_event > 250:
+        if Body.move_dir == 'right':
+            snake_head.body = snake_head.body.move(Body.speed_right)
+            BodyCount.head_pos.append((snake_head.body.x, snake_head.body.y))
+        elif Body.move_dir == 'left':
+            snake_head.body = snake_head.body.move(Body.speed_left)
+            BodyCount.head_pos.append((snake_head.body.x, snake_head.body.y))
+        elif Body.move_dir == 'up':
+            snake_head.body = snake_head.body.move(Body.speed_up)
+            BodyCount.head_pos.append((snake_head.body.x, snake_head.body.y))
+        else:
+            snake_head.body = snake_head.body.move(Body.speed_down)
+            BodyCount.head_pos.append((snake_head.body.x, snake_head.body.y))
+        if len(BodyCount.bodies) > 1:
+            move_forward()
+        seconds_since_last_event = 0
 
     screen.blit(bg, bg_rect)    # quick and dirty solution
     screen.blit(apple.img, apple.body)
     for body_part in BodyCount.bodies:
-        screen.blit(body_part.img, body_part.body)   # blit ?
+        screen.blit(body_part.img, body_part.body)
 
     pygame.display.flip()   # updates whole screen whereas update(*args) only the args portion of the screen.
+
