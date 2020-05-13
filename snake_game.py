@@ -36,6 +36,7 @@ class Scoreboard:
 
 class GameOver:
     game_over = False
+    final_score = 0
     if pygame.font:
         font = pygame.font.Font(None, 36)
         text = font.render("Game Over! Your score: " + str(Scoreboard.score), 1, (10, 10, 10))
@@ -138,6 +139,7 @@ while True:
         apple.random_spawn()
         Scoreboard.score += 1
         Scoreboard.text = text = Scoreboard.font.render("Your Score: " + str(Scoreboard.score), 1, (10, 10, 10))
+        GameOver.text = text = GameOver.font.render("Game Over! Your score: " + str(Scoreboard.score), 1, (10, 10, 10))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
