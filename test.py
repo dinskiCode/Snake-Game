@@ -5,8 +5,7 @@ import random
 '''
 TODO:
 Mandatory updates:
-1. game over if snake head collides with border
-2. prevent apple from moving to tile that currently contains part of the snake body 
+1. prevent apple from moving to tile that currently contains part of the snake body 
 --
 Optional updates:
 1. start-/pause-/end-screen
@@ -64,7 +63,10 @@ class Body:
         self.is_head = is_head
         self.pos = pos
         self.id = BodyCount.id
-        self.img = pygame.image.load("Body.png")
+        if self.is_head is False:
+            self.img = pygame.image.load("Body.png")
+        else:
+            self.img = pygame.image.load("Snake_Head.png")
         self.body = self.img.get_rect()
         self.body.x = self.pos[0]
         self.body.y = self.pos[1]
@@ -99,7 +101,7 @@ class Apple:
 
 
 # head
-snake_head = Body((0, 700), True)
+snake_head = Body((random.randint(1, 13)*50, random.randint(1, 13)*50), True)
 apple = Apple()
 
 
