@@ -5,9 +5,8 @@ import random
 '''
 TODO:
 Mandatory updates:
-1. game over if snake head collides with part of body
-2. game over if snake head collides with border
-3. prevent apple from moving to tile that currently contains part of the snake body 
+1. game over if snake head collides with border
+2. prevent apple from moving to tile that currently contains part of the snake body 
 --
 Optional updates:
 1. start-/pause-/end-screen
@@ -23,6 +22,10 @@ clock = pygame.time.Clock()
 bg = pygame.image.load("Background.png")
 bg_rect = bg.get_rect()
 
+started = False
+ms = 0
+milliseconds_since_last_event = 0
+
 
 class Scoreboard:
     score = 0
@@ -30,6 +33,19 @@ class Scoreboard:
         font = pygame.font.Font(None, 36)
         text = font.render("Your Score: " + str(score), 1, (10, 10, 10))
         text_pos = text.get_rect(centerx=600)
+
+
+class GameOver:
+    game_over = False
+    if pygame.font:
+        font = pygame.font.Font(None, 36)
+        text = font.render("Game Over! Your score: " + str(Scoreboard.score), 1, (10, 10, 10))
+        text_pos = text.get_rect(centerx=370, centery=300)
+
+    game_over_box = pygame.image.load("Game_over_box.png")
+    game_over_rect = game_over_box.get_rect()
+    game_over_rect.x = 200
+    game_over_rect.y = 250
 
 
 class BodyCount:
@@ -95,12 +111,21 @@ def move_forward():
         body_nr += 1
 
 
-started = False
-ms = 0
-milliseconds_since_last_event = 0
+def check_self_collision():
+    if len(BodyCount.bodies) > 2:
+        for bp in BodyCount.bodies[1::]:
+            if snake_head.body.x == bp.body.x and snake_head.body.y == bp.body.y:
+                GameOver.game_over = True
+
+
+def check_border_collision():
+    if snake_head.body.x < 0 or snake_head.body.x > 700 or snake_head.body.y < 0 or snake_head.body.y > 700:
+        GameOver.game_over = True
+
 
 while True:
-    # print(milliseconds_since_last_event/1000)
+    check_self_collision()
+    check_border_collision()
     if started:
         ms = clock.tick()
     milliseconds_since_last_event += ms
@@ -120,23 +145,18 @@ while True:
             started = True
             if event.key == pygame.K_DOWN:
                 Body.move_dir = 'down'
-                if len(BodyCount.bodies) > 1:
-                    move_forward()
 
             elif event.key == pygame.K_UP:
                 Body.move_dir = 'up'
-                if len(BodyCount.bodies) > 1:
-                    move_forward()
 
             elif event.key == pygame.K_LEFT:
                 Body.move_dir = 'left'
-                if len(BodyCount.bodies) > 1:
-                    move_forward()
 
             elif event.key == pygame.K_RIGHT:
                 Body.move_dir = 'right'
-                if len(BodyCount.bodies) > 1:
-                    move_forward()
+
+    if GameOver.game_over:
+        Body.move_dir = None
 
     if milliseconds_since_last_event > 200:
         if Body.move_dir == 'right':
@@ -148,19 +168,23 @@ while True:
         elif Body.move_dir == 'up':
             snake_head.body = snake_head.body.move(Body.speed_up)
             BodyCount.head_pos.append((snake_head.body.x, snake_head.body.y))
-        else:
+        elif Body.move_dir == 'down':
             snake_head.body = snake_head.body.move(Body.speed_down)
             BodyCount.head_pos.append((snake_head.body.x, snake_head.body.y))
         if len(BodyCount.bodies) > 1:
             move_forward()
         milliseconds_since_last_event = 0
 
-    # quick and dirty solution
+    # draw screen, this might not be the best solution though
     screen.blit(bg, bg_rect)
     screen.blit(apple.img, apple.body)
     for body_part in BodyCount.bodies:
         screen.blit(body_part.img, body_part.body)
     screen.blit(Scoreboard.text, Scoreboard.text_pos)
+    if GameOver.game_over:
+        screen.blit(GameOver.game_over_box, GameOver.game_over_rect)
+        screen.blit(GameOver.text, GameOver.text_pos)
 
+    # TODO: stop updating screen if game over
     pygame.display.flip()   # updates whole screen whereas update(*args) only the args portion of the screen.
 
