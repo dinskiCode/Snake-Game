@@ -18,8 +18,13 @@ pygame.init()
 size = width, height = 750, 750
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
+
 bg = pygame.image.load("Background.png")
 bg_rect = bg.get_rect()
+controls_img = pygame.image.load("Controls.png")
+controls_rect = controls_img.get_rect()
+controls_rect.x = 220
+controls_rect.y = 500
 
 started = False
 ms = 0
@@ -182,6 +187,8 @@ while True:
     # draw screen, this might not be the best solution though
     screen.blit(bg, bg_rect)
     screen.blit(apple.img, apple.body)
+    if not started:
+        screen.blit(controls_img, controls_rect)
     for body_part in BodyCount.bodies:
         screen.blit(body_part.img, body_part.body)
     screen.blit(Scoreboard.text, Scoreboard.text_pos)
