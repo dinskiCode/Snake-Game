@@ -31,6 +31,7 @@ ms = 0
 milliseconds_since_last_event = 0
 
 
+# TODO: create file for all the classes 
 class Scoreboard:
     score = 0
     if pygame.font:
