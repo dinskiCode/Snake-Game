@@ -5,7 +5,7 @@ import random
 '''
 TODO:
 Mandatory updates:
-1. prevent apple from moving to tile that currently contains part of the snake body 
+
 --
 Optional updates:
 1. start-/pause-/end-screen
@@ -31,7 +31,7 @@ ms = 0
 milliseconds_since_last_event = 0
 
 
-# TODO: create file for all the classes 
+# TODO: create file for all the classes
 class Scoreboard:
     score = 0
     if pygame.font:
@@ -98,13 +98,16 @@ class Apple:
         self.body.x = self.pos[0]
         self.body.y = self.pos[1]
 
-    def random_spawn(self):  # TODO: new_pos might be in a field that currently contains a part of snake body
+    def random_spawn(self): 
         curr_x = self.body.x    # equal to distance from left border
         curr_y = self.body.y    # equal to distance from top border
         x_pos = random.randint((0-curr_x)/50, (700-curr_x)/50)*50
         y_pos = random.randint((0-curr_y)/50, (700-curr_y)/50)*50
-        new_pos = [x_pos, y_pos]
-        self.body = self.body.move(new_pos)
+        new_pos = (x_pos, y_pos)
+        if (new_pos[0] + curr_x, new_pos[1] + curr_y) not in BodyCount.head_pos:
+            self.body = self.body.move(new_pos)
+        else:
+            self.random_spawn()
 
 
 # head
@@ -132,7 +135,13 @@ def check_border_collision():
         GameOver.game_over = True
 
 
+def update_head_pos():
+    if len(BodyCount.head_pos) > len(BodyCount.bodies):
+        BodyCount.head_pos.pop(0)
+
+
 while True:
+    update_head_pos()
     check_self_collision()
     check_border_collision()
     if started:
