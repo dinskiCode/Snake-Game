@@ -1,6 +1,10 @@
 var light_green = "#83eb34";
 var green = "#30db33";
 
+$(document).ready(function() {
+    start_game();
+});
+
 function start_game() {
     game_area.start();
     head = new body_part(true, [100, 100]);
@@ -14,7 +18,8 @@ var game_area = {
         this.canvas.height = 650;
         this.ctx = this.canvas.getContext("2d");
         draw_background(this.ctx);
-        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        //document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        document.querySelector('.snake').appendChild(this.canvas);
         this.interval = setInterval(update_game_area, 150);
         window.addEventListener('keydown', function(e) {
             game_area.key = e.keyCode;
@@ -58,9 +63,9 @@ function body_part(is_head, pos) {
     this.width = this.height = 50;
     this.is_head = is_head
     if (this.is_head == true) {
-        this.color = "black";
+        this.color = "#004d4d";
     } else {
-        this.color = "blue";
+        this.color = "#00b386";
     }
     this.x = pos[0];
     this.y = pos[1];
@@ -108,7 +113,7 @@ function body_part(is_head, pos) {
 
 
 function apple() {
-    this.color = "red";
+    this.color = "#990000";
     this.width = this.height = 40;
     this.x = Math.floor(Math.random() * 13) * 50;
     this.y = Math.floor(Math.random() * 10) * 50;
