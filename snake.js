@@ -1,9 +1,16 @@
-var light_green = "#83eb34";
-var green = "#30db33";
+const light_green = "#83eb34";
+const green = "#30db33";
 
-$(document).ready(function() {
+document.addEventListener('DOMContentLoaded', () => {
     start_game();
 });
+
+window.addEventListener("keydown", function(e) {
+    // space and arrow keys
+    if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+        e.preventDefault();
+    }
+}, false);
 
 function start_game() {
     game_area.start();
@@ -135,8 +142,7 @@ function apple() {
     }
 }
 
-// only if game_started = true ?
-function update_game_area() {   // if move_dir == ..., move_all_body_parts etc. in here?
+function update_game_area() {
     if (game_area.game_over == false) {
         game_area.clear();
 
